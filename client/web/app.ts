@@ -86,7 +86,9 @@ app.ticker.add(() => {
       const playerSprite = new AnimatedSprite(idleTextures);
       playerSprite.anchor.set(0.5, 1);
       playerSprite.setTransform(player.location.x, player.location.y);
-      viewport.follow(playerSprite);
+      if (player.id === user.id) {
+        viewport.follow(playerSprite);
+      }
       viewport.addChild(playerSprite);
       playerSprites.set(player.id, playerSprite);
     } else {
