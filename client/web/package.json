@@ -1,0 +1,13 @@
+{
+  "name": "among-us-tutorial-client",
+  "version": "0.0.1",
+  "type": "module",
+  "dependencies": {
+    "interpolation-buffer": "^1.2.3",
+    "pixi-viewport": "^4.34.4",
+    "pixi.js": "^6.2.1"
+  },
+  "devDependencies": {
+    "typescript": "^4.5.2"
+  }
+}

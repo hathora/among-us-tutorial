@@ -1,0 +1,8 @@
+{
+  "name": "among-us-tutorial-server",
+  "version": "0.0.1",
+  "type": "module",
+  "devDependencies": {
+    "typescript": "^4.5.2"
+  }
+}

@@ -1,0 +1,123 @@
+{"frames": {
+
+"walkcolor0001.png":
+{
+	"frame": {"x":1,"y":317,"w":84,"h":112},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":1,"w":84,"h":112},
+	"sourceSize": {"w":84,"h":113},
+	"anchor": {"x":0.5,"y":1}
+},
+"walkcolor0002.png":
+{
+	"frame": {"x":115,"y":317,"w":84,"h":114},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":1,"w":84,"h":114},
+	"sourceSize": {"w":84,"h":115},
+	"anchor": {"x":0.5,"y":1}
+},
+"walkcolor0003.png":
+{
+	"frame": {"x":1,"y":403,"w":84,"h":111},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":1,"w":84,"h":111},
+	"sourceSize": {"w":84,"h":112},
+	"anchor": {"x":0.5,"y":1}
+},
+"walkcolor0004.png":
+{
+	"frame": {"x":114,"y":403,"w":84,"h":106},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":1,"w":84,"h":106},
+	"sourceSize": {"w":84,"h":107},
+	"anchor": {"x":0.5,"y":1}
+},
+"walkcolor0005.png":
+{
+	"frame": {"x":1,"y":1,"w":76,"h":96},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":1,"w":76,"h":96},
+	"sourceSize": {"w":76,"h":97},
+	"anchor": {"x":0.5,"y":1}
+},
+"walkcolor0006.png":
+{
+	"frame": {"x":99,"y":1,"w":76,"h":96},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":1,"w":76,"h":96},
+	"sourceSize": {"w":76,"h":97},
+	"anchor": {"x":0.5,"y":1}
+},
+"walkcolor0007.png":
+{
+	"frame": {"x":109,"y":157,"w":78,"h":118},
+	"rotated": true,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":78,"h":118},
+	"sourceSize": {"w":78,"h":118},
+	"anchor": {"x":0.5,"y":1}
+},
+"walkcolor0008.png":
+{
+	"frame": {"x":1,"y":237,"w":78,"h":119},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":1,"w":78,"h":119},
+	"sourceSize": {"w":78,"h":120},
+	"anchor": {"x":0.5,"y":1}
+},
+"walkcolor0009.png":
+{
+	"frame": {"x":122,"y":237,"w":78,"h":116},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":1,"w":78,"h":116},
+	"sourceSize": {"w":78,"h":117},
+	"anchor": {"x":0.5,"y":1}
+},
+"walkcolor0010.png":
+{
+	"frame": {"x":1,"y":157,"w":77,"h":106},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":1,"w":77,"h":106},
+	"sourceSize": {"w":77,"h":107},
+	"anchor": {"x":0.5,"y":1}
+},
+"walkcolor0011.png":
+{
+	"frame": {"x":1,"y":79,"w":76,"h":94},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":1,"w":76,"h":94},
+	"sourceSize": {"w":76,"h":95},
+	"anchor": {"x":0.5,"y":1}
+},
+"walkcolor0012.png":
+{
+	"frame": {"x":97,"y":79,"w":76,"h":94},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":1,"w":76,"h":94},
+	"sourceSize": {"w":76,"h":95},
+	"anchor": {"x":0.5,"y":1}
+}},
+"animations": {
+	"walkcolor": ["walkcolor0001.png","walkcolor0002.png","walkcolor0003.png","walkcolor0004.png","walkcolor0005.png","walkcolor0006.png","walkcolor0007.png","walkcolor0008.png","walkcolor0009.png","walkcolor0010.png","walkcolor0011.png","walkcolor0012.png"]
+},
+"meta": {
+	"app": "https://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "walk.png",
+	"format": "RGBA8888",
+	"size": {"w":239,"h":488},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:be69c1f63c74ed6c249b244245a0d130:3bc23edeb2dcfa74262a0dc7c4e158a9:f9e905ee92ca6262c513e44422b15402$"
+}
+}
