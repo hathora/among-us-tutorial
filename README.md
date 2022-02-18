@@ -21,4 +21,9 @@ Try it at https://among-us-tutorial.surge.sh/
 
 First make sure you have nodejs and [hathora](https://github.com/hathora/hathora) installed.
 
-Then simply run `hathora dev` and visit http://localhost:3001 in your browser.
+Next clone this repository:
+```sh
+git clone https://github.com/hathora/among-us-tutorial.git
+```
+
+Finally, `cd` into `among-us-tutorial` and run `hathora dev`. Once the command runs, visit http://localhost:3001 in your browser to see the working application!
