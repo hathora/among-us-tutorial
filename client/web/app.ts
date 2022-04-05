@@ -12,7 +12,7 @@ const viewport = setupViewport();
 app.stage.addChild(viewport);
 viewport.addChild(new Sprite(backgroundTexture));
 
-const client = new HathoraClient(import.meta.env.VITE_APP_ID);
+const client = new HathoraClient();
 if (sessionStorage.getItem("token") === null) {
   sessionStorage.setItem("token", await client.loginAnonymous());
 }
@@ -46,11 +46,11 @@ function setupViewport() {
 
 async function getClient(onStateChange: (args: UpdateArgs) => void) {
   if (location.pathname.length > 1) {
-    return client.connectExisting(token, location.pathname.split("/").pop()!, onStateChange, console.error);
+    return client.connect(token, location.pathname.split("/").pop()!, onStateChange, console.error);
   } else {
-    const conn = await client.connectNew(token, onStateChange, console.error);
-    history.pushState({}, "", `/${conn.stateId}`);
-    return conn;
+    const stateId = await client.create(token, {});
+    history.pushState({}, "", `/${stateId}`);
+    return client.connect(token, stateId, onStateChange, console.error);
   }
 }
 

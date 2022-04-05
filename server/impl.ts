@@ -1,21 +1,13 @@
 import { Methods, Context } from "./.hathora/methods";
 import { Response } from "../api/base";
-import { Location, GameState, UserId, IJoinGameRequest, IMoveToRequest } from "../api/types";
+import { Location, GameState, UserId, IInitializeRequest, IJoinGameRequest, IMoveToRequest } from "../api/types";
 
-type InternalPlayer = {
-  id: UserId;
-  location: Location;
-  target?: Location;
-};
-type InternalState = {
-  players: InternalPlayer[];
-};
+type InternalPlayer = { id: UserId; location: Location; target?: Location };
+type InternalState = { players: InternalPlayer[] };
 
 export class Impl implements Methods<InternalState> {
-  initialize(userId: UserId, ctx: Context): InternalState {
-    return {
-      players: [],
-    };
+  initialize(ctx: Context, args: IInitializeRequest): InternalState {
+    return { players: [] };
   }
   joinGame(state: InternalState, userId: UserId, ctx: Context, request: IJoinGameRequest): Response {
     state.players.push({ id: userId, location: { x: 4900, y: 1700 } });
