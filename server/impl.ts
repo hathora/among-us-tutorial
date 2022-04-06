@@ -10,6 +10,9 @@ export class Impl implements Methods<InternalState> {
     return { players: [] };
   }
   joinGame(state: InternalState, userId: UserId, ctx: Context, request: IJoinGameRequest): Response {
+    if (state.players.find((p) => p.id === userId) !== undefined) {
+      return Response.error("Already joined");
+    }
     state.players.push({ id: userId, location: { x: 4900, y: 1700 } });
     return Response.ok();
   }
