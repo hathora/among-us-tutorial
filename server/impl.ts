@@ -1,13 +1,13 @@
 import { Methods, Context } from "./.hathora/methods";
 import { Response } from "../api/base";
-import { Location, GameState, UserId, IInitializeRequest, IJoinGameRequest, IMoveToRequest } from "../api/types";
+import { Location, GameState, UserId, IInitializeRequest, IJoinGameRequest, IMoveToRequest, GameStatus } from "../api/types";
 
 type InternalPlayer = { id: UserId; location: Location; target?: Location };
-type InternalState = { players: InternalPlayer[] };
+type InternalState = { gameStatus: GameStatus, players: InternalPlayer[] };
 
 export class Impl implements Methods<InternalState> {
   initialize(ctx: Context, args: IInitializeRequest): InternalState {
-    return { players: [] };
+    return { gameStatus: GameStatus.ONGOING, players: [] };
   }
   joinGame(state: InternalState, userId: UserId, ctx: Context, request: IJoinGameRequest): Response {
     if (state.players.find((p) => p.id === userId) !== undefined) {
@@ -17,11 +17,16 @@ export class Impl implements Methods<InternalState> {
     return Response.ok();
   }
   moveTo(state: InternalState, userId: UserId, ctx: Context, request: IMoveToRequest): Response {
+    if (state.gameStatus === GameStatus.CREW_WON || state.gameStatus === GameStatus.IMPOSTER_WON) {
+      return Response.error("Game already finished")
+    }
     const player = state.players.find((p) => p.id === userId);
     if (player === undefined) {
       return Response.error("Not joined");
     }
     player.target = request.location;
+    // Test out the gameStatus functionality by setting the game status to finished.
+    state.gameStatus = GameStatus.CREW_WON
     return Response.ok();
   }
   getUserState(state: InternalState, userId: UserId): GameState {

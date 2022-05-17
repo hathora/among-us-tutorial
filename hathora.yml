@@ -7,8 +7,13 @@ types:
   Player:
     id: UserId
     location: Location
+  GameStatus:
+    - ONGOING
+    - CREW_WON
+    - IMPOSTER_WON
   # GameState has an array of players and a flag indicating whether or not the this user is the imposter
   GameState:
+    gameStatus: GameStatus
     players: Player[]
 
 methods:

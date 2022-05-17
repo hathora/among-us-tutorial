@@ -73,7 +73,14 @@ function lerpPlayer(from: Player, to: Player, pctElapsed: number): Player {
   };
 }
 
-viewport.on("clicked", (e) => connection.moveTo({ location: { x: e.world.x, y: e.world.y } }));
+viewport.on("clicked", (e) => {
+  connection.moveTo({ location: { x: e.world.x, y: e.world.y } })
+  .then(response => {
+    if (response.hasOwnProperty('error')) {
+      window.alert(response.error)
+    }
+  })
+});
 
 const playerSprites: Map<UserId, AnimatedSprite> = new Map();
 app.ticker.add(() => {
