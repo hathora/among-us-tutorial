@@ -2,7 +2,7 @@ import { AnimatedSprite, Application, Loader, Sprite, Texture } from "pixi.js";
 import { Viewport } from "pixi-viewport";
 import { InterpolationBuffer } from "interpolation-buffer";
 import { HathoraClient, UpdateArgs } from "../.hathora/client";
-import { GameState, Player, UserId } from "../../api/types";
+import { GameState, GameStatus, Player, UserId } from "../../api/types";
 
 const app = new Application({ resizeTo: window });
 document.body.appendChild(app.view);
@@ -20,15 +20,23 @@ const token = sessionStorage.getItem("token")!;
 const user = HathoraClient.getUserFromToken(token);
 
 let buffer: InterpolationBuffer<GameState> | undefined;
+let currState : GameState = {gameStatus: GameStatus.WAITING, players: []};
 const connection = await getClient(({ state, updatedAt }) => {
+  // Join the game on server.
   if (state.players.find((player) => player.id === user.id) === undefined) {
     connection.joinGame({});
   }
+
+  // Deal with changes to game status
+  gameStatusChange(currState, state);
+
+  // Move the players across the map.
   if (buffer === undefined) {
     buffer = new InterpolationBuffer(state, 100, lerp);
   } else {
     buffer.enqueue(state, updatedAt);
   }
+  currState = state
 });
 
 function setupViewport() {
@@ -42,6 +50,18 @@ function setupViewport() {
   vp.setZoom(0.5);
   window.onresize = () => vp.resize();
   return vp;
+}
+
+function gameStatusChange(oldState: GameState, newState: GameState) {
+  if (oldState.gameStatus === newState.gameStatus) {
+    return
+  } else if (newState.gameStatus === GameStatus.ONGOING) {
+    window.alert("Game starting")
+  } else if (newState.gameStatus === GameStatus.CREW_WON) {
+    window.alert("Crew won")
+  } else if (newState.gameStatus === GameStatus.IMPOSTER_WON) {
+    window.alert("Imposters won")
+  }
 }
 
 async function getClient(onStateChange: (args: UpdateArgs) => void) {

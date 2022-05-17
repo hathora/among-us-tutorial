@@ -19,7 +19,6 @@ export class Impl implements Methods<InternalState> {
     state.players.push({ id: userId, location: { x: 4900, y: 1700 } });
     if (state.players.length == 2) {
       state.gameStatus = GameStatus.ONGOING
-      // How to let the client know that the game has now started?
     }
     return Response.ok();
   }
