@@ -19,6 +19,9 @@ export class Impl implements Methods<InternalState> {
     state.players.push({ id: userId, location: { x: 4900, y: 1700 } });
     if (state.players.length == 2) {
       state.gameStatus = GameStatus.ONGOING
+      // Then what is the the point of broadcast/ how is it different from modifying
+      // something in the game state, and as a client how do I tap into this message?
+      // ctx.broadcastEvent("Game has now started")
     }
     return Response.ok();
   }
