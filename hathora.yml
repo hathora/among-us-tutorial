@@ -8,6 +8,7 @@ types:
     id: UserId
     location: Location
   GameStatus:
+    - WAITING
     - ONGOING
     - CREW_WON
     - IMPOSTER_WON

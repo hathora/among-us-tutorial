@@ -7,16 +7,26 @@ type InternalState = { gameStatus: GameStatus, players: InternalPlayer[] };
 
 export class Impl implements Methods<InternalState> {
   initialize(ctx: Context, args: IInitializeRequest): InternalState {
-    return { gameStatus: GameStatus.ONGOING, players: [] };
+    return { gameStatus: GameStatus.WAITING, players: [] };
   }
   joinGame(state: InternalState, userId: UserId, ctx: Context, request: IJoinGameRequest): Response {
     if (state.players.find((p) => p.id === userId) !== undefined) {
       return Response.error("Already joined");
     }
+    if (state.gameStatus !== GameStatus.WAITING) {
+      return Response.error("Game is no longer accepting new players")
+    }
     state.players.push({ id: userId, location: { x: 4900, y: 1700 } });
+    if (state.players.length == 2) {
+      state.gameStatus = GameStatus.ONGOING
+      // How to let the client know that the game has now started?
+    }
     return Response.ok();
   }
   moveTo(state: InternalState, userId: UserId, ctx: Context, request: IMoveToRequest): Response {
+    if (state.gameStatus === GameStatus.WAITING) {
+      return Response.error("Game has not started yet")
+    }
     if (state.gameStatus === GameStatus.CREW_WON || state.gameStatus === GameStatus.IMPOSTER_WON) {
       return Response.error("Game already finished")
     }
@@ -25,8 +35,6 @@ export class Impl implements Methods<InternalState> {
       return Response.error("Not joined");
     }
     player.target = request.location;
-    // Test out the gameStatus functionality by setting the game status to finished.
-    state.gameStatus = GameStatus.CREW_WON
     return Response.ok();
   }
   getUserState(state: InternalState, userId: UserId): GameState {
