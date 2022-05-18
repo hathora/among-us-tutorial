@@ -24,9 +24,6 @@ export class Impl implements Methods<InternalState> {
         state.players[i].team = teams[i]
       }
       state.gameStatus = GameStatus.ONGOING
-      // Then what is the the point of broadcast/ how is it different from modifying
-      // something in the game state, and as a client how do I tap into this message?
-      // ctx.broadcastEvent("Game has now started")
     }
     return Response.ok();
   }
@@ -48,6 +45,9 @@ export class Impl implements Methods<InternalState> {
       return Response.error("Not joined");
     }
     player.target = request.location;
+    // Then what is the the point of broadcast/ how is it different from modifying
+    // something in the game state, and as a client how do I tap into this message?
+    ctx.broadcastEvent(`Player ${player.id} moving to target location ${player.target}`)
     return Response.ok();
   }
   getUserState(state: InternalState, userId: UserId): GameState {
