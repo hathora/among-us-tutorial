@@ -17,9 +17,10 @@ export class Impl implements Methods<InternalState> {
       return Response.error("Game is no longer accepting new players")
     }
     state.players.push({ id: userId, location: { x: 4900, y: 1700 }, team: Team.UNDETERMINED, status: PlayerStatus.ALIVE });
-    if (state.players.length == 2) {
+    const playersPerGame = 4;
+    if (state.players.length == playersPerGame) {
       // Assign players to a team and start the game.
-      const teams = this.getRandomTeams()
+      const teams = this.getRandomTeams(playersPerGame)
       for (let i = 0; i < teams.length; i++) {
         state.players[i].team = teams[i]
       }
@@ -28,10 +29,12 @@ export class Impl implements Methods<InternalState> {
     return Response.ok();
   }
   
-  // TODO: Implement a real randomly generated array.
-  getRandomTeams(): Array<Team> {
-    if (Math.random() < .5) {return [Team.CREW, Team.IMPOSTER]}
-    return [Team.IMPOSTER, Team.CREW]
+  // TODO: Implement a real randomly generated array with potentially multiple imposters.
+  getRandomTeams(numPlayers: number): Team[] {
+    let teams = new Array(numPlayers).fill(Team.CREW);
+    const imposterIndex = Math.floor(Math.random() * teams.length);
+    teams[imposterIndex] = Team.IMPOSTER;
+    return teams;
   }
 
   moveTo(state: InternalState, userId: UserId, ctx: Context, request: IMoveToRequest): Response {
