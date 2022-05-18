@@ -1,8 +1,8 @@
 import { Methods, Context } from "./.hathora/methods";
 import { Response } from "../api/base";
-import { Location, GameState, UserId, IInitializeRequest, IJoinGameRequest, IMoveToRequest, GameStatus, Team } from "../api/types";
+import { Location, GameState, UserId, IInitializeRequest, IJoinGameRequest, IMoveToRequest, IAttackRequest, GameStatus, Team, PlayerStatus } from "../api/types";
 
-type InternalPlayer = { id: UserId; location: Location; target?: Location, team: Team };
+type InternalPlayer = { id: UserId; location: Location; target?: Location, team: Team, status: PlayerStatus };
 type InternalState = { gameStatus: GameStatus, players: InternalPlayer[] };
 
 export class Impl implements Methods<InternalState> {
@@ -16,7 +16,7 @@ export class Impl implements Methods<InternalState> {
     if (state.gameStatus !== GameStatus.WAITING) {
       return Response.error("Game is no longer accepting new players")
     }
-    state.players.push({ id: userId, location: { x: 4900, y: 1700 }, team: Team.UNDETERMINED });
+    state.players.push({ id: userId, location: { x: 4900, y: 1700 }, team: Team.UNDETERMINED, status: PlayerStatus.ALIVE });
     if (state.players.length == 2) {
       // Assign players to a team and start the game.
       const teams = this.getRandomTeams()
@@ -50,6 +50,38 @@ export class Impl implements Methods<InternalState> {
     ctx.broadcastEvent(`Player ${player.id} moving to target location ${player.target}`)
     return Response.ok();
   }
+
+  attack(state: InternalState, userId: UserId, ctx: Context, request: IAttackRequest): Response {
+    const player = state.players.find((p) => p.id === userId);
+    if (player === undefined) {
+      return Response.error("Not joined");
+    }
+    if (player.team !== Team.IMPOSTER) {
+      return Response.error("Only imposters may attack.");
+    }
+    const attackResults = this.tryAttack(player, state.players);
+    if (attackResults.attackSuccessful) {
+        attackResults.attackedPlayer!.status = PlayerStatus.GHOST;
+    }
+    return Response.ok();
+  }
+
+  tryAttack(attacker: InternalPlayer, players: InternalPlayer[]): {attackSuccessful: boolean, attackedPlayer: InternalPlayer|null} {
+    for (const player of players) {
+      if (player.team !== Team.CREW || player.status !== PlayerStatus.ALIVE) {
+        continue
+      }
+      const withinRadius = Math.sqrt((attacker.location.x - player.location.x)**2 + (attacker.location.y - player.location.y)**2) < 1;
+      // TODO: Take the attacker's current and target location, attackee's current and target location,
+      // and figure out if the attack would land.
+      const inRightDirection = true;
+      if (withinRadius && inRightDirection) {
+        return {attackSuccessful: true, attackedPlayer: player}
+      }
+    }
+    return {attackSuccessful: false, attackedPlayer: null}
+  }
+  
   getUserState(state: InternalState, userId: UserId): GameState {
     return state;
   }
