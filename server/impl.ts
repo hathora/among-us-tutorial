@@ -1,13 +1,13 @@
 import { Methods, Context } from "./.hathora/methods";
 import { Response } from "../api/base";
-import { Location, GameState, UserId, IInitializeRequest, IJoinGameRequest, IMoveToRequest, IAttackRequest, GameStatus, Team, PlayerStatus } from "../api/types";
+import { Location, GameState, UserId, IInitializeRequest, IJoinGameRequest, IMoveToRequest, IAttackRequest, GameStatus, Team, PlayerStatus, CrewBody } from "../api/types";
 
 type InternalPlayer = { id: UserId; location: Location; target?: Location, team: Team, status: PlayerStatus };
-type InternalState = { gameStatus: GameStatus, players: InternalPlayer[] };
+type InternalState = { gameStatus: GameStatus, players: InternalPlayer[], crewBodies: CrewBody[] };
 
 export class Impl implements Methods<InternalState> {
   initialize(ctx: Context, args: IInitializeRequest): InternalState {
-    return { gameStatus: GameStatus.WAITING, players: [] };
+    return { gameStatus: GameStatus.WAITING, players: [], crewBodies: [] };
   }
   joinGame(state: InternalState, userId: UserId, ctx: Context, request: IJoinGameRequest): Response {
     if (state.players.find((p) => p.id === userId) !== undefined) {
@@ -62,6 +62,8 @@ export class Impl implements Methods<InternalState> {
     const attackResults = this.tryAttack(player, state.players);
     if (attackResults.attackSuccessful) {
         attackResults.attackedPlayer!.status = PlayerStatus.GHOST;
+        // TODO: check if Javascript makes a copy of location or a reference
+        state.crewBodies.push({id: attackResults.attackedPlayer!.id, location: attackResults.attackedPlayer!.location})
         // Imposters win if there are no other live crew members left.
         if (!state.players.some((p) => p.team === Team.CREW && p.status === PlayerStatus.ALIVE)) {
           state.gameStatus = GameStatus.IMPOSTER_WON

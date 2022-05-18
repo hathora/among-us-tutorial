@@ -16,6 +16,9 @@ types:
     location: Location
     team: Team
     status: PlayerStatus
+  CrewBody:
+    id: UserId
+    location: Location
   GameStatus:
     - WAITING
     - ONGOING
@@ -25,6 +28,7 @@ types:
   GameState:
     gameStatus: GameStatus
     players: Player[]
+    crewBodies: CrewBody[]
 
 methods:
   # joinGame will let players join the lobby until the game starts

@@ -20,7 +20,7 @@ const token = sessionStorage.getItem("token")!;
 const user = HathoraClient.getUserFromToken(token);
 
 let buffer: InterpolationBuffer<GameState> | undefined;
-let currState : GameState = {gameStatus: GameStatus.WAITING, players: []};
+let currState : GameState = {gameStatus: GameStatus.WAITING, players: [], crewBodies: []};
 const connection = await getClient(({ state, updatedAt, events }) => {
   // Join the game on server.
   if (state.players.find((player) => player.id === user.id) === undefined) {
@@ -33,6 +33,9 @@ const connection = await getClient(({ state, updatedAt, events }) => {
   }
   for (const player of state.players) {
     console.log(player);
+  }
+  for (const body of state.crewBodies) {
+    console.log(body);
   }
 
   // Deal with changes to game status.
