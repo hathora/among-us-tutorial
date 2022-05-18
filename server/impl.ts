@@ -84,6 +84,8 @@ export class Impl implements Methods<InternalState> {
       // TODO: Take the attacker's current and target location, attackee's current and target location,
       // and figure out if the attack would land.
       const inRightDirection = true;
+      // For now, attacks can only kill one crew member. We can imagine game play where it can 
+      // kill the crew member closest within range and in the closest direction, or kills all crew members if they fit the criteria.
       if (withinRadius && inRightDirection) {
         return {attackSuccessful: true, attackedPlayer: player}
       }
