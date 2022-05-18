@@ -71,7 +71,7 @@ export class Impl implements Methods<InternalState> {
       if (player.team !== Team.CREW || player.status !== PlayerStatus.ALIVE) {
         continue
       }
-      const withinRadius = Math.sqrt((attacker.location.x - player.location.x)**2 + (attacker.location.y - player.location.y)**2) < 1;
+      const withinRadius = Math.sqrt((attacker.location.x - player.location.x)**2 + (attacker.location.y - player.location.y)**2) < 200;
       // TODO: Take the attacker's current and target location, attackee's current and target location,
       // and figure out if the attack would land.
       const inRightDirection = true;

@@ -27,8 +27,12 @@ const connection = await getClient(({ state, updatedAt, events }) => {
     connection.joinGame({});
   }
 
+  // Used only for debugging.
   if (events.length > 0) {
     console.log(events)
+  }
+  for (const player of state.players) {
+    console.log(player);
   }
 
   // Deal with changes to game status.
@@ -111,6 +115,16 @@ viewport.on("clicked", (e) => {
     }
   })
 });
+
+document.addEventListener('keyup', (e) => {
+  if (e.code === 'Space') {
+    connection.attack({}).then(response => {
+      if (response.hasOwnProperty('error')) {
+        window.alert(response.error)
+      }
+    });
+  }
+})
 
 const playerSprites: Map<UserId, AnimatedSprite> = new Map();
 app.ticker.add(() => {
