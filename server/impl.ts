@@ -1,6 +1,6 @@
 import { Methods, Context } from "./.hathora/methods";
 import { Response } from "../api/base";
-import { Location, GameState, UserId, IInitializeRequest, IJoinGameRequest, IMoveToRequest, IAttackRequest, GameStatus, Team, PlayerStatus, CrewBody } from "../api/types";
+import { Location, GameState, UserId, IInitializeRequest, IJoinGameRequest, IMoveToRequest, IAttackRequest, IReportBodyRequest, GameStatus, Team, PlayerStatus, CrewBody } from "../api/types";
 
 type InternalPlayer = { id: UserId; location: Location; target?: Location, team: Team, status: PlayerStatus };
 type InternalState = { gameStatus: GameStatus, players: InternalPlayer[], crewBodies: CrewBody[] };
@@ -66,7 +66,7 @@ export class Impl implements Methods<InternalState> {
     if (attackResults.attackSuccessful) {
         attackResults.attackedPlayer!.status = PlayerStatus.GHOST;
         // TODO: check if Javascript makes a copy of location or a reference
-        state.crewBodies.push({id: attackResults.attackedPlayer!.id, location: attackResults.attackedPlayer!.location})
+        state.crewBodies.push({id: attackResults.attackedPlayer!.id, location: attackResults.attackedPlayer!.location, reported: false})
         // Imposters win if there are no other live crew members left.
         if (!state.players.some((p) => p.team === Team.CREW && p.status === PlayerStatus.ALIVE)) {
           state.gameStatus = GameStatus.IMPOSTER_WON
@@ -92,6 +92,36 @@ export class Impl implements Methods<InternalState> {
     }
     return {attackSuccessful: false, attackedPlayer: null}
   }
+
+  reportBody(state: InternalState, userId: UserId, ctx: Context, request: IReportBodyRequest): Response {
+    const player = state.players.find((p) => p.id === userId);
+    if (player === undefined) {
+      return Response.error("Not joined");
+    }
+    const reportBodyResults = this.tryReportBody(player, state.crewBodies);
+    if (reportBodyResults.reportSuccessful) {
+      reportBodyResults.foundBody!.reported = true;
+      ctx.broadcastEvent(`Reporting body of user ${reportBodyResults.foundBody!.id}`);
+    }
+    return Response.ok();
+  }
+
+  // TODO: We really want to report a body if it's within eyesight of the reporter.
+  // Currently we estimate this by just if it's in a certain radius of the reporter.
+  tryReportBody(reporter: InternalPlayer, bodies: CrewBody[]): {reportSuccessful: boolean, foundBody: CrewBody|null} {
+    for (const body of bodies) {
+      if (body.reported) {
+        continue;
+      }
+      const withinRadius = Math.sqrt((reporter.location.x - body.location.x)**2 + (reporter.location.y - body.location.y)**2) < 400;
+      if (withinRadius) {
+        return {reportSuccessful: true, foundBody: body}
+      }
+    }
+    return {reportSuccessful: false, foundBody: null}
+  }
+
+  
   
   getUserState(state: InternalState, userId: UserId): GameState {
     return state;

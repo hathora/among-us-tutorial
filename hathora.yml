@@ -19,6 +19,7 @@ types:
   CrewBody:
     id: UserId
     location: Location
+    reported: boolean
   GameStatus:
     - WAITING
     - ONGOING
@@ -37,6 +38,7 @@ methods:
   moveTo:
     location: Location
   attack:
+  reportBody:
 
 # use anonymous authentication to keep things simple for now
 auth:
