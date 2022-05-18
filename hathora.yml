@@ -20,6 +20,25 @@ types:
     id: UserId
     location: Location
     reported: boolean
+  Tally:
+    votee: UserId
+    voters: UserId[]
+  VoteResult:
+    # Some vote results may not be conclusive, for example if no one reached a majority.
+    conclusive: boolean
+    player: UserId?
+  Vote:
+    inProgress: boolean
+    reporter: UserId
+    # Everyone needs to know who the body belongs to.
+    deadBody: UserId
+    # List of tallies
+    tally: Tally[]?
+    # Include vote result here so that we can implement fully on the server side the logic of interpreting the votes.
+    result: VoteResult?
+
+    # TODO: The time at which the votes are collected.
+    # timeExpired: int
   GameStatus:
     - WAITING
     - ONGOING
@@ -30,6 +49,7 @@ types:
     gameStatus: GameStatus
     players: Player[]
     crewBodies: CrewBody[]
+    vote: Vote?
 
 methods:
   # joinGame will let players join the lobby until the game starts
@@ -39,6 +59,8 @@ methods:
     location: Location
   attack:
   reportBody:
+  sendVote:
+    votee: UserId
 
 # use anonymous authentication to keep things simple for now
 auth:

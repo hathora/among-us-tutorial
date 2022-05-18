@@ -1,13 +1,19 @@
 import { Methods, Context } from "./.hathora/methods";
 import { Response } from "../api/base";
-import { Location, GameState, UserId, IInitializeRequest, IJoinGameRequest, IMoveToRequest, IAttackRequest, IReportBodyRequest, GameStatus, Team, PlayerStatus, CrewBody } from "../api/types";
+import { Location, GameState, UserId, IInitializeRequest, IJoinGameRequest, IMoveToRequest, IAttackRequest, IReportBodyRequest, GameStatus, Team, PlayerStatus, CrewBody, Vote, ISendVoteRequest, Tally, VoteResult } from "../api/types";
 
 type InternalPlayer = { id: UserId; location: Location; target?: Location, team: Team, status: PlayerStatus };
-type InternalState = { gameStatus: GameStatus, players: InternalPlayer[], crewBodies: CrewBody[] };
+type InternalState = { 
+  gameStatus: GameStatus, 
+  players: InternalPlayer[], 
+  crewBodies: CrewBody[], 
+  inProgressVote: Map<UserId, UserId>, 
+  vote?: Vote  
+};
 
 export class Impl implements Methods<InternalState> {
   initialize(ctx: Context, args: IInitializeRequest): InternalState {
-    return { gameStatus: GameStatus.WAITING, players: [], crewBodies: [] };
+    return { gameStatus: GameStatus.WAITING, players: [], crewBodies: [], inProgressVote: new Map() };
   }
   joinGame(state: InternalState, userId: UserId, ctx: Context, request: IJoinGameRequest): Response {
     if (state.players.find((p) => p.id === userId) !== undefined) {
@@ -102,7 +108,7 @@ export class Impl implements Methods<InternalState> {
     const reportBodyResults = this.tryReportBody(player, state.crewBodies);
     if (reportBodyResults.reportSuccessful) {
       reportBodyResults.foundBody!.reported = true;
-      ctx.broadcastEvent(`Reporting body of user ${reportBodyResults.foundBody!.id}`);
+      state.vote = {inProgress: true, reporter: userId, deadBody: reportBodyResults.foundBody!.id}
     }
     return Response.ok();
   }
@@ -120,6 +126,66 @@ export class Impl implements Methods<InternalState> {
       }
     }
     return {reportSuccessful: false, foundBody: null}
+  }
+
+  sendVote(state: InternalState, userId: string, ctx: Context, request: ISendVoteRequest): Response {
+    const player = state.players.find((p) => p.id === userId);
+    if (player === undefined) {
+      return Response.error("Not joined");
+    }
+    if (!state.vote || !state.vote.inProgress) {
+      return Response.error("No vote in progress");
+    }
+    if (state.inProgressVote.has(userId)) {
+      return Response.error("You may not vote multiple times")
+    }
+    // This also handles the case of the player who was killed submitting a vote.
+    if (player.status !== PlayerStatus.ALIVE) {
+      return Response.error("Only alive players are allowed to vote");
+    }
+    const votee = state.players.find((p) => p.id === request.votee);
+    if (votee === undefined) {
+      return Response.error("Voted for player hasn't joined");
+    }
+    if (votee.status !== PlayerStatus.ALIVE) {
+      return Response.error("You may only vote for players that are still alive")
+    }
+    state.inProgressVote.set(userId, request.votee);
+
+    let expectedNumVotes = 0;
+    for (const player of state.players) {
+      if (player.status !== PlayerStatus.ALIVE) {
+        continue;
+      }
+      expectedNumVotes++;
+    }
+
+    if (expectedNumVotes === state.inProgressVote.size) {
+      let tally = new Map()
+      for (let [voter, votee] of state.inProgressVote.entries()) {
+        if (!tally.has(votee)) {
+          tally.set(votee, [voter]);
+        } else {
+          tally.get(votee).push(voter);
+        }
+      }
+
+      let tallyArray = []
+      let voteResult: VoteResult = {conclusive: false};
+      for (let [votee, voters] of tally) {
+        tallyArray.push({votee: votee, voters: voters});
+        // Require a strict majority for now.
+        if (voters.length > (expectedNumVotes) / 2 ) {
+          voteResult = {conclusive: true, player: votee};
+          // TODO: Set the player has dead/exposed, and check if either side won.
+        }
+      }
+      state.vote!.tally = tallyArray;
+      state.vote!.result = voteResult;
+      state.vote!.inProgress = false;
+      state.inProgressVote.clear();
+    }
+    return Response.ok()
   }
 
   
