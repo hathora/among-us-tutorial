@@ -1,8 +1,8 @@
 import { Methods, Context } from "./.hathora/methods";
 import { Response } from "../api/base";
-import { Location, GameState, UserId, IInitializeRequest, IJoinGameRequest, IMoveToRequest, GameStatus } from "../api/types";
+import { Location, GameState, UserId, IInitializeRequest, IJoinGameRequest, IMoveToRequest, GameStatus, Team } from "../api/types";
 
-type InternalPlayer = { id: UserId; location: Location; target?: Location };
+type InternalPlayer = { id: UserId; location: Location; target?: Location, team: Team };
 type InternalState = { gameStatus: GameStatus, players: InternalPlayer[] };
 
 export class Impl implements Methods<InternalState> {
@@ -16,14 +16,25 @@ export class Impl implements Methods<InternalState> {
     if (state.gameStatus !== GameStatus.WAITING) {
       return Response.error("Game is no longer accepting new players")
     }
-    state.players.push({ id: userId, location: { x: 4900, y: 1700 } });
+    state.players.push({ id: userId, location: { x: 4900, y: 1700 }, team: Team.UNDETERMINED });
     if (state.players.length == 2) {
+      // Assign players to a team and start the game.
+      const teams = this.getRandomTeams()
+      for (let i = 0; i < teams.length; i++) {
+        state.players[i].team = teams[i]
+      }
       state.gameStatus = GameStatus.ONGOING
       // Then what is the the point of broadcast/ how is it different from modifying
       // something in the game state, and as a client how do I tap into this message?
       // ctx.broadcastEvent("Game has now started")
     }
     return Response.ok();
+  }
+  
+  // TODO: Implement a real randomly generated array.
+  getRandomTeams(): Array<Team> {
+    if (Math.random() < .5) {return [Team.CREW, Team.IMPOSTER]}
+    return [Team.IMPOSTER, Team.CREW]
   }
   moveTo(state: InternalState, userId: UserId, ctx: Context, request: IMoveToRequest): Response {
     if (state.gameStatus === GameStatus.WAITING) {

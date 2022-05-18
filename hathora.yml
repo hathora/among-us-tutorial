@@ -4,9 +4,14 @@ types:
     x: float
     y: float
   # Player has a userId and a location
+  Team:
+    - UNDETERMINED
+    - CREW
+    - IMPOSTER
   Player:
     id: UserId
     location: Location
+    team: Team
   GameStatus:
     - WAITING
     - ONGOING
