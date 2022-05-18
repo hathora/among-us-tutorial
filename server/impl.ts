@@ -33,6 +33,7 @@ export class Impl implements Methods<InternalState> {
     if (Math.random() < .5) {return [Team.CREW, Team.IMPOSTER]}
     return [Team.IMPOSTER, Team.CREW]
   }
+
   moveTo(state: InternalState, userId: UserId, ctx: Context, request: IMoveToRequest): Response {
     if (state.gameStatus === GameStatus.WAITING) {
       return Response.error("Game has not started yet")
@@ -45,8 +46,7 @@ export class Impl implements Methods<InternalState> {
       return Response.error("Not joined");
     }
     player.target = request.location;
-    // Then what is the the point of broadcast/ how is it different from modifying
-    // something in the game state, and as a client how do I tap into this message?
+    // Example broadcast event.
     ctx.broadcastEvent(`Player ${player.id} moving to target location ${player.target}`)
     return Response.ok();
   }
