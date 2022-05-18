@@ -44,6 +44,8 @@ const connection = await getClient(({ state, updatedAt, events }) => {
   // there's at least a couple of ways to handle this:
   // - Use events instead of keeping track of previous server state on the client side.
   // - On the server, when a client reconnects, send the last couple of timestamps from the server side. Unknown atm if this is a common use case.
+  // - In the API, have an additional boolean that indicates whether something is in transitional state. Remove transitional state on server once done. 
+  // The above could alternatively be implemented with separate gamestatus enums for transitional states.
   // TODO: confirm that this is the case and fix this behavior.
   gameStatusChange(currState, state);
 
