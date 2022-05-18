@@ -65,8 +65,9 @@ export class Impl implements Methods<InternalState> {
     const attackResults = this.tryAttack(player, state.players);
     if (attackResults.attackSuccessful) {
         attackResults.attackedPlayer!.status = PlayerStatus.GHOST;
-        // TODO: check if Javascript makes a copy of location or a reference
-        state.crewBodies.push({id: attackResults.attackedPlayer!.id, location: attackResults.attackedPlayer!.location, reported: false})
+        // Shallow copy is fine so long as location only contains primitives.
+        const locationCopy = Object.assign({}, attackResults.attackedPlayer!.location);
+        state.crewBodies.push({id: attackResults.attackedPlayer!.id, location: locationCopy, reported: false})
         // Imposters win if there are no other live crew members left.
         if (!state.players.some((p) => p.team === Team.CREW && p.status === PlayerStatus.ALIVE)) {
           state.gameStatus = GameStatus.IMPOSTER_WON
