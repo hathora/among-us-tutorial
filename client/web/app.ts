@@ -31,7 +31,13 @@ const connection = await getClient(({ state, updatedAt, events }) => {
     console.log(events)
   }
 
-  // Deal with changes to game status
+  // Deal with changes to game status.
+  // This seems to run into issues when the client disconnects-- in that case, the curr state
+  // seems to reset to waiting and the user gets a duplicated game starting screen. In that case,
+  // there's at least a couple of ways to handle this:
+  // - Use events instead of keeping track of previous server state on the client side.
+  // - On the server, when a client reconnects, send the last couple of timestamps from the server side. Unknown atm if this is a common use case.
+  // TODO: confirm that this is the case and fix this behavior.
   gameStatusChange(currState, state);
 
   // Move the players across the map.
