@@ -20,14 +20,14 @@ const token = sessionStorage.getItem("token")!;
 const user = HathoraClient.getUserFromToken(token);
 
 let buffer: InterpolationBuffer<GameState> | undefined;
-const connection = await getClient(({ state, updatedAt }) => {
+const connection = await getClient(({ state, events, updatedAt }) => {
   if (state.players.find((player) => player.id === user.id) === undefined) {
     connection.joinGame({});
   }
   if (buffer === undefined) {
     buffer = new InterpolationBuffer(state, 100, lerp);
   } else {
-    buffer.enqueue(state, updatedAt);
+    buffer.enqueue(state, events, updatedAt);
   }
 });
 
@@ -80,7 +80,7 @@ app.ticker.add(() => {
   if (buffer === undefined) {
     return;
   }
-  const state = buffer.getInterpolatedState(Date.now());
+  const { state } = buffer.getInterpolatedState(Date.now());
   state.players.forEach((player) => {
     if (!playerSprites.has(player.id)) {
       const playerSprite = new AnimatedSprite(idleTextures);
