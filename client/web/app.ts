@@ -19,17 +19,11 @@ if (sessionStorage.getItem("token") === null) {
 const token = sessionStorage.getItem("token")!;
 const user = HathoraClient.getUserFromToken(token);
 
-let buffer: InterpolationBuffer<GameState> | undefined;
-const connection = await getClient(({ state, events, updatedAt }) => {
-  if (state.players.find((player) => player.id === user.id) === undefined) {
-    connection.joinGame({});
-  }
-  if (buffer === undefined) {
-    buffer = new InterpolationBuffer(state, 100, lerp);
-  } else {
-    buffer.enqueue(state, events, updatedAt);
-  }
-});
+const connection = await getClient();
+connection.joinGame({});
+const buffer = new InterpolationBuffer(connection.state, 100, lerp);
+connection.onUpdate(({ state, events, updatedAt }) => buffer.enqueue(state, events, updatedAt));
+connection.onError(console.error);
 
 function setupViewport() {
   const vp = new Viewport({
@@ -44,13 +38,13 @@ function setupViewport() {
   return vp;
 }
 
-async function getClient(onStateChange: (args: UpdateArgs) => void) {
+async function getClient() {
   if (location.pathname.length > 1) {
-    return client.connect(token, location.pathname.split("/").pop()!, onStateChange, console.error);
+    return client.connect(token, location.pathname.split("/").pop()!);
   } else {
     const stateId = await client.create(token, {});
     history.pushState({}, "", `/${stateId}`);
-    return client.connect(token, stateId, onStateChange, console.error);
+    return client.connect(token, stateId);
   }
 }
 
