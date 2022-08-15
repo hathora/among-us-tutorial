@@ -20,7 +20,7 @@ const token = sessionStorage.getItem("token")!;
 const user = HathoraClient.getUserFromToken(token);
 
 const connection = await getClient();
-connection.joinGame({});
+await connection.joinGame({});
 const buffer = new InterpolationBuffer(connection.state, 100, lerp);
 connection.onUpdate(({ state, events, updatedAt }) => buffer.enqueue(state, events, updatedAt));
 connection.onError(console.error);
