@@ -4,7 +4,7 @@
 
 Built using https://github.com/hathora/hathora
 
-Step-by-step tutorial on how to build this game: https://docs.hathora.dev/#/tutorial_among_us
+Step-by-step tutorial on how to build this game: https://docs.hathora.dev/#/builder/tutorial_among_us
 
 Assets from https://www.spriters-resource.com/pc_computer/amongus/
 
